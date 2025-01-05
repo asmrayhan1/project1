@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:project1/view/screen/splash_screen.dart';
+import 'package:project1/view/screen/login_screen.dart';
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +14,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const SplashScreen(),
+      home: AnimatedSplashScreen(
+          duration: 3000,
+          splash: Image.asset('assets/images/ezy.png'),
+          nextScreen: LoginScreen(),
+          splashTransition: SplashTransition.fadeTransition,
+          backgroundColor: Color(0xff105866)
+      )
     );
   }
 }
