@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:project1/view/screen/news_feed.dart';
+import 'package:project1/view/screen/on_boarding_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -26,7 +28,6 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: Color(0xff105866),
       body: Stack(
-
         children: [
           Positioned(
             top: 0,
@@ -92,6 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: Colors.white,  // Set text color to blue
                           fontSize: 18,         // Optional: set font size
                         ),
+                        cursorColor: Colors.white,
                         decoration: InputDecoration(
                           filled: true, // Enables the background color
                           fillColor: Colors.white12, // Background color
@@ -118,6 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: Colors.white,  // Set text color to blue
                           fontSize: 18,         // Optional: set font size
                         ),
+                        cursorColor: Colors.white,
                         decoration: InputDecoration(
                           filled: true, // Enables the background color
                           fillColor: Colors.white12, // Background color
@@ -159,6 +162,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(height: 30),
                       GestureDetector(
                         onTap: (){
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => NewsFeed()),
+                          );
                           print("Login button working");
                         },
                         child: Container(
