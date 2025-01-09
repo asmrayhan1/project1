@@ -76,7 +76,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> LoginScreen()),
                     );
                   }
-                  _controller.nextPage(duration: Duration(milliseconds: 1500), curve: Curves.ease);
+                  _controller.nextPage(duration: Duration(milliseconds: 1000), curve: Curves.ease);
                 },
                 child: Container(
                   height: 50,
