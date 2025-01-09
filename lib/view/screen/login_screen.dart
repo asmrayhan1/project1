@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:project1/view/screen/news_feed.dart';
-import 'package:project1/view/screen/on_boarding_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,6 +13,7 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
+  bool _obscureText = true;
   bool _isChecked = false;
   void _toggleCheckbox(bool? newValue){
     setState(() {
@@ -116,12 +116,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(height: 7),
                       TextField(
                         controller: _passwordController,
+                        obscureText: _obscureText,
                         style: TextStyle(
                           color: Colors.white,  // Set text color to blue
                           fontSize: 18,         // Optional: set font size
                         ),
                         cursorColor: Colors.white,
                         decoration: InputDecoration(
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureText ? Icons.visibility_off : Icons.visibility,
+                              color: Colors.white70,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscureText = !_obscureText;  // Toggle the visibility
+                              });
+                            },
+                          ),
                           filled: true, // Enables the background color
                           fillColor: Colors.white12, // Background color
                           hintText: 'Enter Password Here',
