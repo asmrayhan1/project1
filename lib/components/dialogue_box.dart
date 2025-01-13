@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project1/view/screen/user_auth/login_screen.dart';
-import 'package:project1/view/screen/user_auth/register_screen.dart';
+import 'package:project1/view/screen/user_auth/registration_screen.dart';
 
 class DialogBox {
   // Static method to show the dialog
