@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:project1/components/custom_modal_bottom_sheet.dart';
+import 'package:project1/components/reaction.dart';
+import 'package:project1/view/screen/create_post.dart';
 
 class Community extends StatefulWidget {
   const Community({super.key});
@@ -9,6 +12,7 @@ class Community extends StatefulWidget {
 }
 
 class _CommunityState extends State<Community> {
+  List<String?> imagePath = List.generate(30, (index) => "");
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -22,7 +26,8 @@ class _CommunityState extends State<Community> {
                   SizedBox(height: 20),
                 if (index == 0) GestureDetector(
                   onTap: (){
-                    print("Post Button Woriking");
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => CreatePost()));
+                    print("Post Button Working");
                   },
                   child: Container(
                     width: double.infinity,
@@ -135,21 +140,35 @@ class _CommunityState extends State<Community> {
                     Row(
                       children: [
                         Container(
-                          height: 25,
-                          width: 25,
-                          child: Image.asset('assets/images/like.png', fit: BoxFit.fill,),
+                          height: 28,
+                          width: 28,
+                          child: GestureDetector(
+                            onTap: () async {
+                              final currentPath = await Reaction.showDialogBox(context);
+                              setState(() {
+                                imagePath[index] = currentPath;
+                              });
+                              print("Like button working");
+                            },
+                            child: Image.asset((imagePath[index] != "" && imagePath[index] != null)? '${imagePath[index]}' : 'assets/images/like.png', fit: BoxFit.fill,)
+                          ),
                         ),
                         SizedBox(width: 10),
                         Text("You and 2 others", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xff181835)),)
                       ],
                     ),
-                    Row(
-                      children: [
-                        Icon(Icons.mode_comment, size: 25),
-                        SizedBox(width: 10),
-                        Text("Comment", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xff181835)),)
-                      ],
-                    )
+                    GestureDetector(
+                      onTap: (){
+                        CustomModalBottomSheet().newBottomSheet(context);
+                      },
+                      child: Row(
+                        children: [
+                          Icon(Icons.mode_comment, size: 25),
+                          SizedBox(width: 10),
+                          Text("Comment", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xff181835)),)
+                        ],
+                      ),
+                    ),
                   ],
                 ),
                 SizedBox(height: 10),

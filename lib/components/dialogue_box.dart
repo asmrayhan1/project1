@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:project1/view/screen/login_screen.dart';
+import 'package:project1/view/screen/user_auth/login_screen.dart';
+import 'package:project1/view/screen/user_auth/register_screen.dart';
 
 class DialogBox {
   // Static method to show the dialog
@@ -23,7 +24,7 @@ class DialogBox {
                       Navigator.of(context).pop(); // Close dialog
                       // Add Logout logic here
                       print('Logged out');
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
                     },
                     child: Text('Yes', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500, color: Color(0xff686868))),
                   ),

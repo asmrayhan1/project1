@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:project1/view/screen/login_screen.dart';
+import 'package:project1/view/screen/user_auth/login_screen.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:project1/view/screen/on_boarding_screen.dart';
+import 'package:project1/view/screen/user_auth/register_screen.dart';
 
 void main() {
   runApp(const MyApp());

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:project1/components/dialogue_box.dart';
 import 'package:project1/view/screen/community.dart';
-import 'package:project1/view/screen/login_screen.dart';
+import 'package:project1/view/screen/user_auth/login_screen.dart';
 
 class NewsFeed extends StatefulWidget {
   const NewsFeed({super.key});

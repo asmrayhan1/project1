@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:project1/components/custom_textfield.dart';
+import 'package:project1/components/password.dart';
+import 'package:project1/utils/toast/toast_util.dart';
 import 'package:project1/view/screen/news_feed.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -10,10 +13,25 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  String _email = ""; bool _isEmail = false;
+  String _password = ""; bool _isPassword = false;
 
-  bool _obscureText = true;
+  // This function will be passed to Password widget to receive updated password
+  void _onEmail(String email, bool status) {
+    setState(() {
+      _email = email;
+      _isEmail= status;
+    });
+  }
+
+  // This function will be passed to Password widget to receive updated password
+  void _onPassword(String password, bool status) {
+    setState(() {
+      _password = password;
+      _isPassword = status;
+    });
+  }
+
   bool _isChecked = false;
   void _toggleCheckbox(bool? newValue){
     setState(() {
@@ -83,79 +101,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Center(child: Text("Sign In", style: TextStyle(fontSize: 38, color: Colors.white, fontWeight: FontWeight.bold),)),
+                      Center(child: Text("Sign In", style: TextStyle(fontSize: 38, color: Colors.white, fontWeight: FontWeight.w800),)),
                       SizedBox(height: 20),
-                      Text("Email", style: TextStyle(fontSize: 25, color: Colors.white60),),
+                      Text("Email", style: TextStyle(fontSize: 25, color: Colors.white60)),
                       SizedBox(height: 7),
-                      TextField(
-                        controller: _emailController,
-                        style: TextStyle(
-                          color: Colors.white,  // Set text color to blue
-                          fontSize: 18,         // Optional: set font size
-                        ),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(
-                          filled: true, // Enables the background color
-                          fillColor: Colors.white12, // Background color
-                          hintText: 'Enter Email Here',
-                          hintStyle: TextStyle(color: Colors.blueGrey),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white60, width: 1.5),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white60, width: 1.5),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          // Padding inside the text field
-                          contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                        ),
-                      ),
+                      CustomTextfield(hintText: "Enter Your Email", value: 2, onValueChanged: _onEmail),
                       SizedBox(height: 30),
                       Text("Password", style: TextStyle(fontSize: 25, color: Colors.white60),),
                       SizedBox(height: 7),
-                      TextField(
-                        controller: _passwordController,
-                        obscureText: _obscureText,
-                        style: TextStyle(
-                          color: Colors.white,  // Set text color to blue
-                          fontSize: 18,         // Optional: set font size
-                        ),
-                        cursorColor: Colors.white,
-                        decoration: InputDecoration(
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscureText ? Icons.visibility_off : Icons.visibility,
-                              color: Colors.white70,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscureText = !_obscureText;  // Toggle the visibility
-                              });
-                            },
-                          ),
-                          filled: true, // Enables the background color
-                          fillColor: Colors.white12, // Background color
-                          hintText: 'Enter Password Here',
-                          hintStyle: TextStyle(color: Colors.blueGrey),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white60, width: 1.5),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white60, width: 1.5),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          // Padding inside the text field
-                          contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                        ),
-                      ),
+                      Password(password: "Enter Your Password", onPasswordChanged: _onPassword),
                       SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Transform.scale(
-                            scale: 1.3, // Scale the checkbox to 1.5 times its original size
+                            scale: 1.3, // Scale the checkbox to 1.3 times its original size
                             child: Checkbox(
                               activeColor: Colors.white, // Color of the checkbox when checked
                               checkColor: Colors.black,  // Color of the checkmark
@@ -174,9 +134,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(height: 30),
                       GestureDetector(
                         onTap: (){
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => NewsFeed()),
-                          );
-                          print("Login button working");
+                          if (_isPassword && _isEmail){
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => NewsFeed()));
+                            print("Login button working");
+                            ToastUtil.showToast(context: context, message: "Login Successfully.");
+                          } else {
+                            ToastUtil.showToast(context: context, message: "Invalid Input.", isWarning: true);
+                          }
                         },
                         child: Container(
                           height: 60,
