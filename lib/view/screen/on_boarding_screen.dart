@@ -4,6 +4,7 @@ import 'package:project1/view/screen/user_auth/login_screen.dart';
 import 'package:project1/view/screen/news_feed.dart';
 
 import '../../components/sliderr.dart';
+import '../../main.dart';
 import '../../model/slider_model.dart';
 
 
@@ -73,8 +74,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               GestureDetector(
                 onTap: (){
                   if(currentIndex == slides.length - 1){
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> LoginScreen()),
-                    );
+                    (token != null) ? const NewsFeed() : Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> LoginScreen()));
                   }
                   _controller.nextPage(duration: Duration(milliseconds: 1000), curve: Curves.ease);
                 },

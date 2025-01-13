@@ -1,26 +1,31 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project1/components/custom_modal_bottom_sheet.dart';
 import 'package:project1/components/reaction.dart';
+import 'package:project1/controller/community/community_controller.dart';
 import 'package:project1/view/screen/create_post.dart';
 
-class Community extends StatefulWidget {
+class Community extends ConsumerStatefulWidget {
   const Community({super.key});
 
   @override
-  State<Community> createState() => _CommunityState();
+  ConsumerState<Community> createState() => _CommunityState();
 }
 
-class _CommunityState extends State<Community> {
+class _CommunityState extends ConsumerState<Community> {
   List<String?> imagePath = List.generate(30, (index) => "");
+
   @override
   Widget build(BuildContext context) {
+    final home = ref.watch(communityController).community;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: ListView.builder(
-          itemCount: 30,
+          itemCount: home.length,
           itemBuilder: (context, index) {
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (index == 0)
                   SizedBox(height: 20),
@@ -87,8 +92,8 @@ class _CommunityState extends State<Community> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Alexander John", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xff040810)),),
-                            Text("2 days ago", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xff667075)),),
+                            Text("${home[index].user!.fullName}", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xff040810)),),
+                            Text("${home[index].createdAtAgo}", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xff667075)),),
                           ],
                         )
                       ],
@@ -98,16 +103,14 @@ class _CommunityState extends State<Community> {
                 ),
                 Divider(color: Color(0xffd0d5dd)),
                 SizedBox(height: 5),
-                Text("Hello everyone   this is a post from app to see if attached link is "
-                    "working or not. Here is a link https://www.merriam-webster.com/dictionary/link  "
-                    "but I think this is not working. This should work but not working!!!!",
-                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14), textAlign: TextAlign.justify,
+                Text("${home[index].feedTxt}",
+                  style: TextStyle(fontWeight: FontWeight.w400, fontSize: 16), textAlign: TextAlign.justify,
                 ),
                 SizedBox(height: 15),
                 Container(
                   height: 162,
                   width: double.infinity,
-                  child: Image.asset('assets/images/post1.png', fit: BoxFit.fill,),
+                  child: Image.network('${home[index].pic}', fit: BoxFit.fill,),
                 ),
                 SizedBox(height: 10),
                 Row(

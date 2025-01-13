@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:project1/view/screen/user_auth/login_screen.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project1/view/screen/community.dart';
 import 'package:project1/view/screen/on_boarding_screen.dart';
-import 'package:project1/view/screen/user_auth/registration_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
+String? token;
+late SharedPreferences prefs;
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  prefs = await SharedPreferences.getInstance();
+  token = prefs.getString('token');
+  runApp(ProviderScope(child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
