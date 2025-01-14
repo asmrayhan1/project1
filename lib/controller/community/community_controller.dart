@@ -20,7 +20,7 @@ class CommunityController extends StateNotifier<CommunityGeneric> {
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization' : 'Bearer ${token}'
+      'Authorization' : 'Bearer $token'
     };
 
     Map<String, int> body = {
@@ -34,11 +34,15 @@ class CommunityController extends StateNotifier<CommunityGeneric> {
         body: jsonEncode(body)
     );
 
-    // print("Response => ${response.body}");
+   // print("Response => ${response.body}");
     print("StatusCode = ${response.statusCode}");
     state=state.update(isLoading: false);
 
-    ApiErrorResponse errorResponse = ApiErrorResponse.fromJson(jsonDecode(response.body));
+    ApiErrorResponse? errorResponse;
+
+    if (response.statusCode < 200 || response.statusCode >= 300){
+      errorResponse = ApiErrorResponse.fromJson(jsonDecode(response.body));
+      }
     if (response.statusCode>=200 && response.statusCode<300) {
       List<CommunityModel> myList = [];
       try {
@@ -60,7 +64,7 @@ class CommunityController extends StateNotifier<CommunityGeneric> {
       }
     } else {
       print("<<< Error Found on NewsFeed >>>");
-      print(errorResponse.msg);
+      print(errorResponse?.msg);
       print("<<< Error Found on NewsFeed >>>");
     }
   }

@@ -74,7 +74,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               GestureDetector(
                 onTap: (){
                   if(currentIndex == slides.length - 1){
-                    (token != null) ? const NewsFeed() : Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> LoginScreen()));
+                    (token != null) ? Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> NewsFeed())) : Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> LoginScreen()));
                   }
                   _controller.nextPage(duration: Duration(milliseconds: 1000), curve: Curves.ease);
                 },

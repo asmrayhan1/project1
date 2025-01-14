@@ -1,18 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project1/components/custom_textfield.dart';
 import 'package:project1/components/password.dart';
+import 'package:project1/controller/login/login_controller.dart';
+import 'package:project1/main.dart';
 import 'package:project1/utils/toast/toast_util.dart';
 import 'package:project1/view/screen/news_feed.dart';
+import 'package:project1/view/screen/user_auth/registration_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  bool _isChecked = false;
   String _email = ""; bool _isEmail = false;
   String _password = ""; bool _isPassword = false;
 
@@ -24,18 +30,10 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  // This function will be passed to Password widget to receive updated password
   void _onPassword(String password, bool status) {
     setState(() {
       _password = password;
       _isPassword = status;
-    });
-  }
-
-  bool _isChecked = false;
-  void _toggleCheckbox(bool? newValue){
-    setState(() {
-      _isChecked = newValue!;
     });
   }
 
@@ -98,61 +96,93 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(top: 25.0, left: 20, right: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(child: Text("Sign In", style: TextStyle(fontSize: 38, color: Colors.white, fontWeight: FontWeight.w800),)),
-                      SizedBox(height: 20),
-                      Text("Email", style: TextStyle(fontSize: 25, color: Colors.white60)),
-                      SizedBox(height: 7),
-                      CustomTextfield(hintText: "Enter Your Email", value: 2, onValueChanged: _onEmail),
-                      SizedBox(height: 30),
-                      Text("Password", style: TextStyle(fontSize: 25, color: Colors.white60),),
-                      SizedBox(height: 7),
-                      Password(password: "Enter Your Password", onPasswordChanged: _onPassword),
-                      SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Transform.scale(
-                            scale: 1.3, // Scale the checkbox to 1.3 times its original size
-                            child: Checkbox(
-                              activeColor: Colors.white, // Color of the checkbox when checked
-                              checkColor: Colors.black,  // Color of the checkmark
-                              value: _isChecked,
-                              onChanged: _toggleCheckbox,
-                              side: BorderSide(
-                                color: Colors.white60, // Custom border color
-                                width: 2, // Border thickness
-                              ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(child: Text("Sign In", style: TextStyle(fontSize: 38, color: Colors.white, fontWeight: FontWeight.w800),)),
+                        SizedBox(height: 20),
+                        Text("Email", style: TextStyle(fontSize: 25, color: Colors.white60)),
+                        SizedBox(height: 7),
+                        CustomTextfield(hintText: "Enter Your Email", value: 2, onValueChanged: _onEmail),
+                        SizedBox(height: 25),
+                        Text("Password", style: TextStyle(fontSize: 25, color: Colors.white60),),
+                        SizedBox(height: 7),
+                        Password(password: "Enter Your Password", onPasswordChanged: _onPassword),
+                        SizedBox(height: 17),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: (){
+                                    setState(() {
+                                      _isChecked = !_isChecked;
+                                    });
+                                  },
+                                  child: _isChecked? Icon(Icons.check_box, color: Colors.white, size: 22) : Icon(Icons.check_box_outline_blank, color: Colors.white70, size: 22),
+                                ),
+                                SizedBox(width: 10),
+                                Text("Remember me", style: TextStyle(color: Colors.white70, fontSize: 20))
+                              ],
                             ),
-                          ),
-                          SizedBox(width: 5),
-                          Text("Remember me", style: TextStyle(color: Colors.white, fontSize: 25),)
-                        ],
-                      ),
-                      SizedBox(height: 30),
-                      GestureDetector(
-                        onTap: (){
-                          if (_isPassword && _isEmail){
-                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => NewsFeed()));
-                            print("Login button working");
-                            ToastUtil.showToast(context: context, message: "Login Successfully.");
-                          } else {
-                            ToastUtil.showToast(context: context, message: "Invalid Input.", isWarning: true);
-                          }
-                        },
-                        child: Container(
-                          height: 60,
-                          width: W,
-                          decoration: BoxDecoration(
-                            color: Color(0xffe8f54a),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Center(child: Text("Login", style: TextStyle(color: Color(0xff105866), fontSize: 25, fontWeight: FontWeight.bold),)),
+                            GestureDetector(
+                              onTap: (){
+                                //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => NewsFeed()));
+                              },
+                              child: Text("Forgot Password?", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20, color: Colors.white70))
+                            ),
+                          ],
                         ),
-                      )
-                    ],
+                        SizedBox(height: 25),
+                        GestureDetector(
+                          onTap: () async {
+                            if (_isPassword && _isEmail){
+                              String? serverMessage = await ref.read(loginProvider.notifier).login(email: _email, password: _password);
+                              if (serverMessage != null){
+                                SharedPreferences prefs = await SharedPreferences.getInstance();
+                                if (_isChecked){
+                                  prefs.setString('token', serverMessage);
+                                  setState(() {
+                                    token = serverMessage;
+                                  });
+                                };
+                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => NewsFeed()));
+                                print("Login button working");
+                                ToastUtil.showToast(context: context, message: "Login Successfully.");
+                              } else {
+                                ToastUtil.showToast(context: context, message: "Error Found. Try Again!", isWarning: true);
+                              }
+                            } else {
+                              ToastUtil.showToast(context: context, message: "Invalid Input.", isWarning: true);
+                            }
+                          },
+                          child: Container(
+                            height: 60,
+                            width: W,
+                            decoration: BoxDecoration(
+                              color: Color(0xffe8f54a),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(child: Text("Login", style: TextStyle(color: Color(0xff105866), fontSize: 25, fontWeight: FontWeight.bold),)),
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Text("Don't have an account?", style: TextStyle(color: Colors.white70, fontSize: 17)),
+                            SizedBox(width: 10),
+                            GestureDetector(
+                                onTap: (){
+                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
+                                },
+                                child: Text("Sign Up", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w400, fontSize: 17))
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
               )

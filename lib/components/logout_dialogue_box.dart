@@ -27,7 +27,7 @@ class LogoutDialogBox {
                       // Add Logout logic here
                       print('Logged out');
                       await prefs.remove('token');
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
                     },
                     child: Text('Yes', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500, color: Color(0xff686868))),
                   ),

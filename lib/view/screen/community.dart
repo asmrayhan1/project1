@@ -14,8 +14,6 @@ class Community extends ConsumerStatefulWidget {
 }
 
 class _CommunityState extends ConsumerState<Community> {
-  List<String?> imagePath = List.generate(30, (index) => "");
-
   @override
   Widget build(BuildContext context) {
     final home = ref.watch(communityController).community;
@@ -149,11 +147,11 @@ class _CommunityState extends ConsumerState<Community> {
                             onTap: () async {
                               final currentPath = await Reaction.showDialogBox(context);
                               setState(() {
-                                imagePath[index] = currentPath;
+                                //
                               });
                               print("Like button working");
                             },
-                            child: Image.asset((imagePath[index] != "" && imagePath[index] != null)? '${imagePath[index]}' : 'assets/images/like.png', fit: BoxFit.fill,)
+                            child: Image.asset('assets/images/like.png', fit: BoxFit.fill,)
                           ),
                         ),
                         SizedBox(width: 10),

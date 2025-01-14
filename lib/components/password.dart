@@ -26,9 +26,9 @@ class _PasswordState extends State<Password> {
         if (_passwordController.text.trim().isEmpty){
           widget.onPasswordChanged(_passwordController.text.trim(), false);  // Trigger the callback on text change
           ToastUtil.showToast(context: context, message: "Password Can't be Empty!", isWarning: true);
-        } else if (_passwordController.text.trim().length < 8){
+        } else if (_passwordController.text.trim().length < 6){
           widget.onPasswordChanged(_passwordController.text.trim(), false);  // Trigger the callback on text change
-          ToastUtil.showToast(context: context, message: "Password must be at least 8 character!", isWarning: true);
+          ToastUtil.showToast(context: context, message: "Password must be at least 6 character!", isWarning: true);
         } else {
           widget.onPasswordChanged(_passwordController.text.trim(), true);  // Trigger the callback on text change
         }
