@@ -9,23 +9,38 @@ import 'package:project1/model/community_model.dart';
 
 import '../../core/network/api.dart';
 
-final communityController = StateNotifierProvider<CommunityController, CommunityGeneric> ((ref) => CommunityController());
+final communityProvider = StateNotifierProvider<CommunityController, CommunityGeneric> ((ref) => CommunityController());
 
 class CommunityController extends StateNotifier<CommunityGeneric> {
   CommunityController() : super(CommunityGeneric());
 
-  Future<void> getCommunityData() async {
+  Future<void> getCommunityData({required int operation}) async {
     state = state.update(isLoading: true);
+
+    Map<String, dynamic> body;
+
+    if (operation == 3){
+      state.delete();
+    }
+
+    if (operation >= 2){
+      int size = state.community.length;
+      body = {
+        'community_id': 2914,
+        'space_id': 5883,
+        'more': state.community[size - 1].id
+      };
+    } else {
+      body = {
+        'community_id': 2914,
+        'space_id': 5883,
+      };
+    }
 
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'Authorization' : 'Bearer $token'
-    };
-
-    Map<String, int> body = {
-      'community_id': 2914,
-      'space_id': 5883,
     };
 
     Response response = await post(
@@ -42,9 +57,14 @@ class CommunityController extends StateNotifier<CommunityGeneric> {
 
     if (response.statusCode < 200 || response.statusCode >= 300){
       errorResponse = ApiErrorResponse.fromJson(jsonDecode(response.body));
-      }
+    }
     if (response.statusCode>=200 && response.statusCode<300) {
       List<CommunityModel> myList = [];
+      if (operation >= 2){
+        for (int i = 0; i < state.community.length; i++){
+          myList.add(state.community[i]);
+        }
+      }
       try {
         //final db = await DatabaseHelper.getDatabase();
         // Clear all data from the store
@@ -66,6 +86,41 @@ class CommunityController extends StateNotifier<CommunityGeneric> {
       print("<<< Error Found on NewsFeed >>>");
       print(errorResponse?.msg);
       print("<<< Error Found on NewsFeed >>>");
+    }
+  }
+
+  Future<bool> createPost({required String title}) async {
+    state = state.update(isLoading: true);
+
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization' : 'Bearer $token'
+    };
+
+    Map<String, dynamic> body = {
+      'community_id': 2914,
+      'space_id': 5883,
+      'feed_txt': title,
+      'uploadType': 'text',
+      'activity_type': 'group',
+      'is_background': '0'
+    };
+
+    Response response = await post(
+        Uri.parse(Api.BASE_URL+Api.POST_CREATE),
+        headers: headers,
+        body: jsonEncode(body)
+    );
+
+    // print("Response => ${response.body}");
+    print("Post Create StatusCode = ${response.statusCode}");
+    state=state.update(isLoading: false);
+    if (response.statusCode>=200 && response.statusCode<300) {
+      getCommunityData(operation: 1);
+      return true;
+    } else {
+      return false;
     }
   }
 

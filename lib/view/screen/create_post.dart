@@ -1,14 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project1/controller/community/community_controller.dart';
+import 'package:project1/utils/toast/toast_util.dart';
 
-class CreatePost extends StatefulWidget {
+class CreatePost extends ConsumerStatefulWidget {
   const CreatePost({super.key});
 
   @override
-  State<CreatePost> createState() => _CreatePostState();
+  ConsumerState<CreatePost> createState() => _CreatePostState();
 }
 
-class _CreatePostState extends State<CreatePost> {
+class _CreatePostState extends ConsumerState<CreatePost> {
   TextEditingController _textController = TextEditingController();
   bool isClicked = false;
   int idx = 0;
@@ -33,17 +36,24 @@ class _CreatePostState extends State<CreatePost> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
-                    onTap: (){
+                    onTap: () async {
+                      await ref.read(communityProvider.notifier).getCommunityData(operation: 1);
                       Navigator.of(context).pop();
                     },
                     child: Text("Close", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Color(0xff161a37)),)
                 ),
                 Text("Create Post", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Color(0xff000000)),),
                 GestureDetector(
-                    onTap: (){
-                      Navigator.of(context).pop();
+                    onTap: () async {
+                      if (_textController.text.trim().isEmpty){
+                        ToastUtil.showToast(context: context, message: "Field can't be empty!", isWarning: true);
+                      } else {
+                        bool isOkay = await ref.read(communityProvider.notifier).createPost(title: _textController.text.trim());
+                        ToastUtil.showToast(context: context, message: isOkay? "Post Successfully Created" : "Error Found!", isWarning: isOkay? false : true);
+                        Navigator.of(context).pop();
+                      }
                     },
-                    child: Text("Create", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Color(0xff6662ff)),)
+                    child: Text("Create", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Color(0xff6662ff)))
                 ),
               ],
             ),

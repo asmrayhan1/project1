@@ -1,3 +1,5 @@
+import 'package:project1/controller/comment/comment_generic.dart';
+
 import '../../model/community_model.dart';
 
 class CommunityGeneric {
@@ -10,5 +12,9 @@ class CommunityGeneric {
       isLoading: isLoading?? this.isLoading,
       community: newCommunity?? this.community
     );
+  }
+
+  void delete(){
+    this.community.removeRange(0, 1000);
   }
 }
