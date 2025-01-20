@@ -1,9 +1,6 @@
-// Model for Comment
-import 'package:project1/model/reply_model.dart';
 import 'package:project1/model/user_model.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
-class CommentModel {
+class ReplyModel {
   int? id;
   int? schoolId;
   int? feedId;
@@ -11,18 +8,21 @@ class CommentModel {
   int? replyCount;
   int? likeCount;
   String? commentTxt;
-  int? parentId;
+  int? parrentId;
   DateTime? createdAt;
   DateTime? updatedAt;
   String? file;
   int? isAuthorAndAnonymous;
-  List<ReplyModel>? replies;
+  dynamic gift;
+  dynamic sellerId;
+  dynamic giftedCoins;
+  List<dynamic>? replies;
   User? user;
   List<dynamic>? reactionTypes;
   List<dynamic>? totalLikes;
   dynamic commentLike;
 
-  CommentModel({
+  ReplyModel({
     this.id,
     this.schoolId,
     this.feedId,
@@ -30,11 +30,14 @@ class CommentModel {
     this.replyCount,
     this.likeCount,
     this.commentTxt,
-    this.parentId,
+    this.parrentId,
     this.createdAt,
     this.updatedAt,
     this.file,
     this.isAuthorAndAnonymous,
+    this.gift,
+    this.sellerId,
+    this.giftedCoins,
     this.replies,
     this.user,
     this.reactionTypes,
@@ -42,9 +45,9 @@ class CommentModel {
     this.commentLike,
   });
 
-  // Factory constructor to create a CommentModel from JSON
-  factory CommentModel.fromJson(Map<String, dynamic> json) {
-    return CommentModel(
+  // Factory method to create a Reply object from JSON
+  factory ReplyModel.fromJson(Map<String, dynamic> json) {
+    return ReplyModel(
       id: json['id'],
       schoolId: json['school_id'],
       feedId: json['feed_id'],
@@ -52,23 +55,23 @@ class CommentModel {
       replyCount: json['reply_count'],
       likeCount: json['like_count'],
       commentTxt: json['comment_txt'],
-      parentId: json['parrent_id'],
+      parrentId: json['parrent_id'],
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
       file: json['file'],
       isAuthorAndAnonymous: json['is_author_and_anonymous'],
-      replies: (json['replies'] as List<dynamic>?)
-          ?.map((reply) => ReplyModel.fromJson(reply))
-          .toList() ??
-          [], // Default to empty list if null
+      gift: json['gift'],
+      sellerId: json['seller_id'],
+      giftedCoins: json['gifted_coins'],
+      replies: json['replies'] != null ? List<dynamic>.from(json['replies']) : [],
       user: User.fromJson(json['user']),
-      reactionTypes: List<dynamic>.from(json['reaction_types'] ?? []),
-      totalLikes: List<dynamic>.from(json['totalLikes'] ?? []),
+      reactionTypes: json['reaction_types'] != null ? List<dynamic>.from(json['reaction_types']) : [],
+      totalLikes: json['totalLikes'] != null ? List<dynamic>.from(json['totalLikes']) : [],
       commentLike: json['commentlike'],
     );
   }
 
-  // Convert CommentModel to JSON
+  // Method to convert a Reply object back to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -78,12 +81,15 @@ class CommentModel {
       'reply_count': replyCount,
       'like_count': likeCount,
       'comment_txt': commentTxt,
-      'parrent_id': parentId,
+      'parrent_id': parrentId,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
       'file': file,
       'is_author_and_anonymous': isAuthorAndAnonymous,
-      'replies': replies?.map((reply) => reply.toJson()).toList(),
+      'gift': gift,
+      'seller_id': sellerId,
+      'gifted_coins': giftedCoins,
+      'replies': replies,
       'user': user?.toJson(),
       'reaction_types': reactionTypes,
       'totalLikes': totalLikes,

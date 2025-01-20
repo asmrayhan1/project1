@@ -80,7 +80,8 @@ class CommunityController extends StateNotifier<CommunityGeneric> {
         state = state.update(newCommunity: myList);
         //await getOfflineData();
       } catch (e){
-        print("Error Found in Category");
+        print("Error Found in Community");
+        print(e);
       }
     } else {
       print("<<< Error Found on NewsFeed >>>");

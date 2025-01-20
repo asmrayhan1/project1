@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:project1/components/custom_modal_bottom_sheet.dart';
 import 'package:project1/components/reaction.dart';
 import 'package:project1/controller/community/community_controller.dart';
 import 'package:project1/view/screen/create_post.dart';
 
 import '../../controller/comment/comment_controller.dart';
+import 'comment_screen.dart';
 
 class Community extends ConsumerStatefulWidget {
   const Community({super.key});
@@ -16,6 +16,38 @@ class Community extends ConsumerStatefulWidget {
 }
 
 class _CommunityState extends ConsumerState<Community> {
+  bool newBottomSheet(BuildContext context, String feedId) {
+    bool isClose = false;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Allows customization of height
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(17.5),
+        ),
+      ),
+      builder: (BuildContext context) {
+        double H = MediaQuery.of(context).size.height / 1.15;
+        return CommentScreen(feedId: feedId, h: H);
+      },
+    ).whenComplete(() {
+      isClose = true;
+    });
+    return isClose;
+  }
+  
+  String check(String? reaction){
+    if (reaction == null) return "assets/images/like.png";
+    if (reaction == "LIKE") return "assets/images/like.png";
+    if (reaction == "WOW") return "assets/images/wow.png";
+    if (reaction == "SAD") return "assets/images/sad.png";
+    if (reaction == "LOVE") return "assets/images/love1.png";
+    if (reaction == "ANGRY") return "assets/images/angry.png";
+    if (reaction == "CARE") return "assets/images/care.png";
+    if (reaction == "HAHA") return "assets/images/haha.png";
+    return "assets/images/like.png";
+  }
+
   @override
   Widget build(BuildContext context) {
     final home = ref.watch(communityProvider).community;
@@ -156,7 +188,8 @@ class _CommunityState extends ConsumerState<Community> {
                                     print("Like button working");
                                   },
                                   child: Image.asset(
-                                    'assets/images/like.png', fit: BoxFit.fill,)
+                                    check((home[index].likeType!.isEmpty)?
+                                      null : home[index].likeType?[0].reactionType), fit: BoxFit.fill)
                               ),
                             ),
                             SizedBox(width: 10),
@@ -168,9 +201,7 @@ class _CommunityState extends ConsumerState<Community> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            bool isNotActive = CustomModalBottomSheet()
-                                .newBottomSheet(context, home[index].id
-                                .toString());
+                            bool isNotActive = newBottomSheet(context, home[index].id.toString());
                             if (isNotActive) {
                               ref.read(commentProvider.notifier).clear();
                             }

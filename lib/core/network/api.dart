@@ -10,7 +10,7 @@ class Api{
 
   static const String GET_REACTION_LIST = "teacher/community/getAllReactionType?feed_id=180370";
   static const String GET_FETCH_COMMENT = "student/comment/getComment/";
-  static const String GET_FETCH_REPLY = "student/comment/getReply/61231?more=null";
+  static const String GET_FETCH_REPLY = "student/comment/getReply/";
 
   static const String POST_CREATE_COMMENT = "student/comment/createComment";
   static const String POST_ADD_REPLY = "student/comment/createComment";

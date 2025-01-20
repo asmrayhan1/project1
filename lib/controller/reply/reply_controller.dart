@@ -3,17 +3,19 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart';
 import 'package:project1/controller/comment/comment_generic.dart';
+import 'package:project1/controller/reply/reply_generic.dart';
 import 'package:project1/model/comment_model.dart';
+import 'package:project1/model/reply_model.dart';
 
 import '../../core/network/api.dart';
 import '../../main.dart';
 
-final commentProvider = StateNotifierProvider<CommentController, CommentGeneric> ((ref) => CommentController());
+final replyProvider = StateNotifierProvider<ReplyController, ReplyGeneric> ((ref) => ReplyController());
 
-class CommentController extends StateNotifier<CommentGeneric>{
-  CommentController() : super(CommentGeneric());
+class ReplyController extends StateNotifier<ReplyGeneric>{
+  ReplyController() : super(ReplyGeneric());
 
-  Future<void> getCommentData({required String feedId}) async {
+  Future<void> getReplyData({required String parrentId}) async {
     state = state.update(isLoading: true);
 
     Map<String, String> headers = {
@@ -23,8 +25,8 @@ class CommentController extends StateNotifier<CommentGeneric>{
     };
 
     Response response = await get(
-        Uri.parse(Api.BASE_URL+Api.GET_FETCH_COMMENT+feedId+"??more=null"),
-        headers: headers,
+      Uri.parse(Api.BASE_URL+Api.GET_FETCH_REPLY+parrentId+"?more=null"),
+      headers: headers,
     );
 
     // print("Response => ${response.body}");
@@ -32,8 +34,7 @@ class CommentController extends StateNotifier<CommentGeneric>{
     state=state.update(isLoading: false);
 
     if (response.statusCode>=200 && response.statusCode<300) {
-      List<CommentModel> myList = [];
-      List<bool> isClicked = [];
+      List<ReplyModel> myList = [];
       try {
         //final db = await DatabaseHelper.getDatabase();
         // Clear all data from the store
@@ -41,13 +42,12 @@ class CommentController extends StateNotifier<CommentGeneric>{
         List<dynamic> data = json.decode(response.body);
         // Loop through the JSON and map each item to a CommunityModel
         for (var e in data) {
-          CommentModel comment = CommentModel.fromJson(e as Map<String, dynamic>);
-          myList.add(comment);
-          isClicked.add(false);
+          ReplyModel reply = ReplyModel.fromJson(e as Map<String, dynamic>);
+          myList.add(reply);
 
           //await _store.add(db, category.toJson());  // Add a new record
         }
-        state = state.update(newComment: myList, isClicked: isClicked);
+        state = state.update(newReply: myList);
         //await getOfflineData();
       } catch (e){
         print("Error Found in Category");
@@ -59,7 +59,7 @@ class CommentController extends StateNotifier<CommentGeneric>{
   }
 
 
-  Future<bool> createPost({required String title, required String feedId}) async {
+  Future<bool> createReply({required String txt, required String feedId, required String parrentId}) async {
     state = state.update(isLoading: true);
 
     Map<String, String> headers = {
@@ -69,8 +69,9 @@ class CommentController extends StateNotifier<CommentGeneric>{
     };
 
     Map<String, dynamic> body = {
-      "comment_txt": title,
-      "feed_id": feedId
+      "comment_txt": txt,
+      "feed_id": feedId,
+      "parrent_id" : parrentId
     };
 
     Response response = await post(
@@ -83,19 +84,10 @@ class CommentController extends StateNotifier<CommentGeneric>{
     print("Post Create StatusCode = ${response.statusCode}");
     state=state.update(isLoading: false);
     if (response.statusCode>=200 && response.statusCode<300) {
-      getCommentData(feedId: feedId);
+      //getReplyData(feedId: feedId);
       return true;
     } else {
       return false;
     }
-  }
-
-  void isClicked({required int index}){
-    state.isClicked[index] = !state.isClicked[index];
-  }
-
-  void clear(){
-    List<CommentModel> clr = [];
-    state = state.update(newComment: clr);
   }
 }

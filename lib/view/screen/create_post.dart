@@ -36,11 +36,10 @@ class _CreatePostState extends ConsumerState<CreatePost> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
-                    onTap: () async {
-                      await ref.read(communityProvider.notifier).getCommunityData(operation: 1);
-                      Navigator.of(context).pop();
-                    },
-                    child: Text("Close", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Color(0xff161a37)),)
+                  onTap: (){
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Close", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Color(0xff161a37)))
                 ),
                 Text("Create Post", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Color(0xff000000)),),
                 GestureDetector(

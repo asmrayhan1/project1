@@ -1,3 +1,4 @@
+import 'package:project1/model/reaction_model.dart';
 import 'package:project1/model/user_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -13,6 +14,7 @@ class CommunityModel {
   int? isPinned;
   String? fileType;
   List<dynamic>? files;
+  List<LikeType>? likeType;
   int? likeCount;
   int? commentCount;
   int? shareCount;
@@ -43,7 +45,8 @@ class CommunityModel {
     this.updatedAt,
     this.publishDate,
     this.user,
-    this.pic
+    this.pic,
+    this.likeType
   });
 
   factory CommunityModel.fromJson(Map<String, dynamic> json) {
@@ -68,6 +71,9 @@ class CommunityModel {
       updatedAt: DateTime.parse(json['updated_at']),
       publishDate: json['publish_date'],
       user: User.fromJson(json['user']),
+      likeType: json['likeType'] != null
+          ? (json['likeType'] as List).map((e) => LikeType.fromJson(e)).toList()
+          : null,
     );
   }
 

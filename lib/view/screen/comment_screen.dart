@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project1/components/comment.dart';
+import 'package:project1/components/nested_comment.dart';
+import 'package:project1/components/reply.dart';
 import 'package:project1/controller/comment/comment_controller.dart';
+import 'package:project1/controller/reply/reply_controller.dart';
 
 class CommentScreen extends ConsumerStatefulWidget {
   final double h;
@@ -13,7 +17,17 @@ class CommentScreen extends ConsumerStatefulWidget {
 }
 
 class _CommentScreenState extends ConsumerState<CommentScreen> {
-  TextEditingController _textController = TextEditingController();
+  bool comment = true;
+  bool reply = false;
+  String parentId = "";
+  String name = "";
+
+  void onTapValue(bool status){
+    setState(() {
+      comment = true;
+      reply = false;
+    });
+  }
 
   @override
   void initState() {
@@ -33,13 +47,14 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
     double secondScreen = H - firstScreen;
 
     final home = ref.watch(commentProvider);
+
     return Container(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom), // Add padding to prevent overlap
       height: H,
       child: Column(
         children: [
           Expanded(
-            flex: 9,
+            flex: 15,
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(topLeft: Radius.circular(17.5), topRight: Radius.circular(17.5)),
@@ -105,7 +120,25 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                       SizedBox(width: 30),
                                       Text("Like", style: TextStyle(fontSize: 13)),
                                       SizedBox(width: 30),
-                                      Text("Reply", style: TextStyle(fontSize: 13)),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          setState(() {
+                                            ref.read(commentProvider.notifier).isClicked(index: index);
+                                            reply = true;
+                                            comment = false;
+                                            name = home.comment[index].user!.fullName!;
+                                            parentId = home.comment[index].id.toString();
+                                          });
+                                          if (ref.watch(commentProvider).isClicked[index]) {
+                                            await ref.read(
+                                                replyProvider.notifier)
+                                                .getReplyData(
+                                                parrentId: home.comment[index]
+                                                    .id.toString());
+                                          }
+                                        },
+                                        child: Text("Reply", style: TextStyle(fontSize: 13))
+                                      ),
                                     ],
                                   ),
                                   Row(
@@ -122,6 +155,12 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                                   )
                                 ],
                               ),
+                              if (home.isClicked[index])
+                                Column(
+                                  children: [
+                                    NestedComment(parrentId: home.comment[index].id.toString()),
+                                  ],
+                                ),
                               SizedBox(height: 15),
                             ],
                           );
@@ -134,88 +173,9 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
             ),
           ),
           Expanded(
-            flex: 1,
-            child: SingleChildScrollView(
-              child: Container(
-                height: secondScreen,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: Center(
-                    child: Container(
-                      height: 50,
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                          color: Color(0xffdcdcdc),
-                          borderRadius: BorderRadius.circular(60)
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              SizedBox(width: 5),
-                              Container(
-                                height: 40,
-                                width: 40,
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle
-                                ),
-                                child: ClipOval(child: Image.asset('assets/images/person_icon.png', fit: BoxFit.fill)),
-                              ),
-                              SizedBox(width: 15),
-                              Container(
-                                height: 40,
-                                width: MediaQuery.of(context).size.width / 2.3,
-                                child: TextField(
-                                    controller: _textController,
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    maxLines: 10, // Limits the TextField to 8 lines visually
-                                    cursorColor: Colors.black,
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: 'Write a comment',
-                                      hintStyle: TextStyle(color: Colors.blueGrey),
-                                    )
-                                ),
-                              )
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              if (_textController.text.trim().isNotEmpty) {
-                                await ref.read(commentProvider.notifier).createPost(
-                                    title: _textController.text.trim(),
-                                    feedId: widget.feedId
-                                );
-                              }
-                              FocusScope.of(context).unfocus();
-                            },
-                            child: Container(
-                              width: 55,
-                              decoration: BoxDecoration(
-                                color: Color(0xff004852),
-                                borderRadius: BorderRadius.only(topRight: Radius.circular(60), bottomRight: Radius.circular(60)),
-                              ),
-                              child: Center(
-                                child: Container(
-                                  height: 30,
-                                  width: 30,
-                                  child: Image.asset('assets/images/sent.png', fit: BoxFit.fill),
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            flex: 2,
+            child: (comment)? Comment(secondScreen: secondScreen, onTapValue: onTapValue, feedId: widget.feedId)
+                : Reply(name: name, parentId: parentId, feedId: widget.feedId, secondScreen: secondScreen, onReplyValue: onTapValue),
           ),
         ],
       ),
